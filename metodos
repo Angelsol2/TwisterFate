@@ -1,0 +1,70 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.mycompany.simuladortwister;
+import org.apache.commons.math3.random.MersenneTwister;
+/**
+ *
+ * @author ANGEL
+ */
+public class metodos {
+   private MersenneTwister generador;
+    public metodos() {
+        
+        // Inicializamos el motor Mersenne Twister
+        this.generador = new MersenneTwister();
+    }
+    /**
+     * Corre la simulación matemática pura.
+     * Retorna un objeto con los resultados para que el Main lo imprima.
+     */
+    public ResultadoSimulacion ejecutar(int cantidad, double mediaA, double desvA, double mediaB, double desvB) {
+
+        double momentoLibreA = 0;
+        double momentoLibreB = 0;
+        int colaMaxima = 0;
+        int colaActual = 0;
+        double tiempoEsperaB = 0;
+
+        for (int i = 0; i < cantidad; i++) {
+            // AQUÍ LA MAGIA: Usamos Mersenne Twister para la variabilidad real
+            // Math.max evita tiempos negativo
+         
+            double tiempoA = Math.max(0.1, mediaA + (generador.nextGaussian() * desvA));
+            double tiempoB = Math.max(0.1, mediaB + (generador.nextGaussian() * desvB));
+
+            // Lógica de tiempos
+            momentoLibreA += tiempoA;
+            double llegadaA_B = momentoLibreA;
+
+            double inicioB;
+
+            // ¿B tiene que esperar aque llegue material? (Starving)
+            if (llegadaA_B >= momentoLibreB) {
+                tiempoEsperaB += (llegadaA_B - momentoLibreB);
+                inicioB = llegadaA_B;
+                if (colaActual > 0) colaActual--;
+            }
+            // ¿El material llegó antes de que B estuviera libre? (Cola)
+            else {
+                inicioB = momentoLibreB;
+                colaActual++;
+                if (colaActual > colaMaxima) colaMaxima = colaActual;
+            }
+
+            momentoLibreB = inicioB + tiempoB;
+        }
+
+        // Empaquetamos los datos en un objeto y los devolvemos
+        return new ResultadoSimulacion(
+                colaMaxima,
+                tiempoEsperaB / 60.0, // Convertimos a minutos
+                momentoLibreB / 60.0  // Tiempo total en minutos
+        );
+    }
+
+    // Una clase interna (record) para transportar los datos de vuelta al Main
+    // (Disponible en Java 14+, y tu proyecto usa Java 21 así que funcionará)
+    public record ResultadoSimulacion(int maxCola, double tiempoOciosoB, double tiempoTotal) {} 
+}
