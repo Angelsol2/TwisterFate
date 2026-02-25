@@ -12,13 +12,10 @@ public class metodos {
    private MersenneTwister generador;
     public metodos() {
         
-        // Inicializamos el motor Mersenne Twister
+    
         this.generador = new MersenneTwister();
     }
-    /**
-     * Corre la simulación matemática pura.
-     * Retorna un objeto con los resultados para que el Main lo imprima.
-     */
+ 
     public ResultadoSimulacion ejecutar(int cantidad, double mediaA, double desvA, double mediaB, double desvB) {
 
         double momentoLibreA = 0;
@@ -28,9 +25,6 @@ public class metodos {
         double tiempoEsperaB = 0;
 
         for (int i = 0; i < cantidad; i++) {
-            // AQUÍ LA MAGIA: Usamos Mersenne Twister para la variabilidad real
-            // Math.max evita tiempos negativo
-         
             double tiempoA = Math.max(0.1, mediaA + (generador.nextGaussian() * desvA));
             double tiempoB = Math.max(0.1, mediaB + (generador.nextGaussian() * desvB));
 
