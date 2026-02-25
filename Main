@@ -1,0 +1,59 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ */
+
+package com.mycompany.simuladortwister;
+
+import java.util.Scanner;
+
+/**
+ *
+ * @author ANGEL
+ */
+public class SimuladorTwister {
+
+    public static void main(String[] args) {
+ Scanner scanner = new Scanner(System.in);
+
+        metodos motorSimulacion = new metodos();
+
+        System.out.println("=== SISTEMA DE SIMULACIÓN DE CUELLOS DE BOTELLA ===");
+
+        // 2. Pedimos Inputs
+        System.out.print("\nMedia Maquina A: ");
+        double mediaA = scanner.nextDouble();
+        System.out.print("Desviacion A: ");
+        double desvA = scanner.nextDouble();
+
+        System.out.print("Media Maquina B: ");
+        double mediaB = scanner.nextDouble();
+        System.out.print("Desviacion B: ");
+        double desvB = scanner.nextDouble();
+
+        System.out.print("Cantidad de productos: ");
+        int cantidad = scanner.nextInt();
+
+        System.out.println("\n>>> Procesando con Mersenne Twister...");
+
+        // 3. Llamamos a la lógica (¡Sin mezclar código!)
+        var resultado = motorSimulacion.ejecutar(cantidad, mediaA, desvA, mediaB, desvB);
+
+        // 4. Mostramos el reporte
+        System.out.println("\n---------------- REPORTE ----------------");
+        System.out.printf("Tiempo Total Produccion:  %.2f min\n", resultado.tiempoTotal());
+        System.out.printf("Tiempo Muerto (B espera): %.2f min\n", resultado.tiempoOciosoB());
+        System.out.println("Cola Maxima Alcanzada:    " + resultado.maxCola());
+        System.out.println("-----------------------------------------");
+
+        // Diagnóstico simple
+        if (resultado.maxCola() > cantidad * 0.2) {
+            System.out.println("ALERTA: Cuello de botella severo en Máquina B.");
+        } else if (resultado.tiempoOciosoB() > resultado.tiempoTotal() * 0.2) {
+            System.out.println("ALERTA: La Máquina B está desperdiciada (espera mucho).");
+        } else {
+            System.out.println(" ESTADO: Flujo balanceado.");
+        }
+
+        scanner.close();
+    }
+}
